@@ -49,3 +49,5 @@ Este repositório contém o código; enviar ao GitHub não altera automaticament
 ## Dados e credenciais
 
 Não inclui exportações do banco de produção, imagens enviadas por clientes, senhas, tokens de sessão ou a chave Gemini. `db/source-data.json` contém somente dados de demonstração marcados como fictícios. A configuração web do Firebase é pública por definição e não é uma chave privada de administração.
+
+Configure `ADMIN_EMAIL` como segredo no servidor para conceder acesso administrativo ao e-mail verificado. Sem essa variável, nenhum login recebe esse papel.

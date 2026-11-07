@@ -1,0 +1,15 @@
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+const app='https://strategiacontent.marianabarbalho2003.chatgpt.site';
+let html=await readFile(new URL('../web/index.html',import.meta.url),'utf8');
+html=html.replace(/((?:href|src)=["'])\/(?!\/)/g, '$1'+app+'/');
+html=html.replace(/fetch\('\/api\/account'[\s\S]*?\.catch\(\(\)=>\{\}\);/, '');
+const start=html.indexOf('async function sendChat(text)');
+const end=html.indexOf("document.querySelector('#chat-form').onsubmit",start);
+if(start<0||end<0)throw new Error('Chat markup changed: review Pages export');
+html=html.slice(0,start)+`async function sendChat(text){if(!text.trim())return;chatInput.value='';appendChat(text,'user');appendChat('Para conversar com a assistente de IA, abra o atendimento seguro pelo botão abaixo.','bot');const link=document.createElement('a');link.className='primary';link.textContent='Abrir atendimento ↗';link.href='${app}/';document.querySelector('#chat-messages').appendChild(link);chatStatus.textContent='Atendimento disponível no aplicativo Strategia Content.'}\n`+html.slice(end);
+if(/fetch\(['"]\//.test(html))throw new Error('Local API request remains in Pages output');
+if(/(?:href|src)=["']\/(?!\/)/.test(html))throw new Error('Root-relative URL remains');
+await mkdir(new URL('../docs/',import.meta.url),{recursive:true});
+await writeFile(new URL('../docs/index.html',import.meta.url),html);
+await writeFile(new URL('../docs/.nojekyll',import.meta.url),'');
+console.log('GitHub Pages export: docs/index.html');
